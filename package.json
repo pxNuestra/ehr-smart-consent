@@ -2,7 +2,7 @@
   "name": "ehr-smart-consent",
   "version": "1.0.0",
   "private": true,
-  "description": "EHR Smart Consent System - Patient-Centric Access Control with Blockchain Informed Consent",
+  "description": "PatientCentric Access Control Rekam Medis Elektronik",
   "workspaces": [
     "frontend",
     "backend",

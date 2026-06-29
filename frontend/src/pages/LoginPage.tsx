@@ -33,7 +33,7 @@ export default function LoginPage() {
         <div className="mb-6 text-center">
           <Stethoscope className="mx-auto text-primary-600" size={40} />
           <h1 className="mt-3 text-2xl font-bold text-slate-900">Sign In</h1>
-          <p className="text-sm text-slate-500">EHR Smart Consent System</p>
+          <p className="text-sm text-slate-500">Hibah - PatientCentric Access Control Rekam Medis Elektronik</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Username or Email" value={username} onChange={(e) => setUsername(e.target.value)} required />

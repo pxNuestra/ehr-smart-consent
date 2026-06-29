@@ -271,7 +271,7 @@ async function main() {
   // System config
   await prisma.systemConfig.createMany({
     data: [
-      { key: 'app_name', value: 'EHR Smart Consent System' },
+      { key: 'app_name', value: 'PatientCentric Access Control Rekam Medis Elektronik' },
       { key: 'fingerprint_mode', value: 'development' },
       { key: 'consent_default_days', value: '30' },
       { key: 'blockchain_network', value: 'localhost' },

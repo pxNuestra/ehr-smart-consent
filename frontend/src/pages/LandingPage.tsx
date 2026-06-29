@@ -9,7 +9,7 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2">
             <Stethoscope className="text-primary-600" size={32} />
-            <span className="text-xl font-bold text-primary-800">EHR Smart Consent System</span>
+            <span className="text-xl font-bold text-primary-800">Hibah</span>
           </div>
           <div className="flex gap-3">
             <Link to="/login"><Button variant="outline">Login</Button></Link>
@@ -48,7 +48,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-slate-200 bg-white py-8 text-center text-sm text-slate-500">
-        EHR Smart Consent System — Research Demo Platform
+        &copy; {new Date().getFullYear()} Hibah. All rights reserved.
       </footer>
     </div>
   );
