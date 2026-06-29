@@ -1,4 +1,4 @@
-# Hibah - PatientCentric Access Control Rekam Medis Elektronik
+# Hibah – PatientCentric Access Control Rekam Medis Elektronik
 
 Patient-Centric Access Control for Electronic Health Records (EHR) with **Smart Contract Informed Consent** and **fingerprint authentication**.
 

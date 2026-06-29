@@ -33,7 +33,6 @@ export default function LoginPage() {
         <div className="mb-6 text-center">
           <Stethoscope className="mx-auto text-primary-600" size={40} />
           <h1 className="mt-3 text-2xl font-bold text-slate-900">Masuk</h1>
-          <p className="text-sm text-slate-500">Hibah - Kontrol Akses Rekam Medis Elektronik Berbasis Pasien</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Username atau Email" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -42,10 +41,6 @@ export default function LoginPage() {
             {loading ? 'Sedang masuk...' : 'Masuk'}
           </Button>
         </form>
-        <div className="mt-6 rounded-lg bg-slate-50 p-4 text-xs text-slate-600">
-          <p className="font-medium">Akun demo (Password123!):</p>
-          <p>patient1 · doctor1 · admin1 · auditor1</p>
-        </div>
         <p className="mt-4 text-center text-sm text-slate-500">
           <Link to="/" className="text-primary-600 hover:underline">Kembali ke beranda</Link>
         </p>
