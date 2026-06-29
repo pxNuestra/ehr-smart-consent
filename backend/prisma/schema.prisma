@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PATIENT
+  DOCTOR
+  ADMIN
+  AUDITOR
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ConsentStatus {
+  ACTIVE
+  LIMITED
+  REVOKED
+  EXPIRED
+}
+
+enum AccessRequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+  COMPLETED
+}
+
+enum BiometricStatus {
+  VERIFIED
+  FAILED
+  NOT_ATTEMPTED
+}
+
+enum AccessDecision {
+  ALLOWED
+  DENIED
+}
+
+model User {
+  id           String     @id @default(uuid())
+  username     String     @unique
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  role         UserRole
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  patient              Patient?
+  doctor               Doctor?
+  fingerprintTemplates FingerprintTemplate[]
+  grantedConsents      ConsentShadow[]       @relation("GranteeConsents")
+  accessRequests       AccessRequest[]       @relation("RequesterAccess")
+  accessLogs           AccessLog[]           @relation("ActorAccess")
+  biometricLogs        BiometricLog[]
+  auditLogs            AuditLog[]
+
+  @@map("users")
+}
+
+model Patient {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  patientCode String   @unique @map("patient_code")
+  gender      String
+  age         Int
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalRecords  MedicalRecord[]
+  consents        ConsentShadow[]  @relation("PatientConsents")
+  accessRequests  AccessRequest[]  @relation("PatientAccessRequests")
+  accessLogs      AccessLog[]      @relation("PatientAccessLogs")
+
+  @@map("patients")
+}
+
+model Doctor {
+  id           String   @id @default(uuid())
+  userId       String   @unique @map("user_id")
+  specialty    String
+  licenseDummy String   @map("license_dummy")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalRecords MedicalRecord[] @relation("CreatedRecords")
+
+  @@map("doctors")
+}
+
+model MedicalRecord {
+  id                    String   @id @default(uuid())
+  patientId             String   @map("patient_id")
+  recordCode            String   @unique @map("record_code")
+  diagnosisEncrypted    String   @map("diagnosis_encrypted") @db.Text
+  treatmentEncrypted    String   @map("treatment_encrypted") @db.Text
+  prescriptionEncrypted String   @map("prescription_encrypted") @db.Text
+  labResultEncrypted    String   @map("lab_result_encrypted") @db.Text
+  visitNoteEncrypted    String   @map("visit_note_encrypted") @db.Text
+  recordHash            String   @map("record_hash")
+  recordDate            DateTime @map("record_date")
+  createdByDoctorId     String?  @map("created_by_doctor_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  patient        Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  createdBy      Doctor?         @relation("CreatedRecords", fields: [createdByDoctorId], references: [id])
+  accessRequests AccessRequest[]
+  accessLogs     AccessLog[]
+
+  @@map("medical_records")
+}
+
+model FingerprintTemplate {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  templateId      String   @map("template_id")
+  fingerprintHash String   @map("fingerprint_hash")
+  deviceId        String   @map("device_id")
+  enrolledAt      DateTime @default(now()) @map("enrolled_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, templateId])
+  @@map("fingerprint_templates")
+}
+
+model ConsentShadow {
+  id                   String        @id @default(uuid())
+  blockchainConsentId  Int           @map("blockchain_consent_id")
+  patientId            String        @map("patient_id")
+  granteeUserId        String        @map("grantee_user_id")
+  accessScope          String        @map("access_scope")
+  purpose              String
+  startTime            DateTime      @map("start_time")
+  endTime              DateTime      @map("end_time")
+  status               ConsentStatus @default(ACTIVE)
+  recordHash           String        @map("record_hash")
+  metadataHash         String        @map("metadata_hash")
+  txHash               String        @map("tx_hash")
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+
+  patient Patient @relation("PatientConsents", fields: [patientId], references: [id], onDelete: Cascade)
+  grantee User    @relation("GranteeConsents", fields: [granteeUserId], references: [id])
+
+  @@map("consents_shadow")
+}
+
+model AccessRequest {
+  id              String              @id @default(uuid())
+  requesterUserId String              @map("requester_user_id")
+  patientId       String              @map("patient_id")
+  recordId        String              @map("record_id")
+  purpose         String
+  requestTime     DateTime            @default(now()) @map("request_time")
+  status          AccessRequestStatus @default(PENDING)
+  reason          String?
+  createdAt       DateTime            @default(now()) @map("created_at")
+
+  requester User          @relation("RequesterAccess", fields: [requesterUserId], references: [id])
+  patient   Patient       @relation("PatientAccessRequests", fields: [patientId], references: [id])
+  record    MedicalRecord @relation(fields: [recordId], references: [id])
+  accessLogs AccessLog[]
+
+  @@map("access_requests")
+}
+
+model AccessLog {
+  id              String          @id @default(uuid())
+  requestId       String?         @map("request_id")
+  actorUserId     String          @map("actor_user_id")
+  patientId       String          @map("patient_id")
+  recordId        String?         @map("record_id")
+  biometricStatus BiometricStatus @map("biometric_status")
+  consentStatus   String          @map("consent_status")
+  decision        AccessDecision
+  reason          String?
+  metadataHash    String          @map("metadata_hash")
+  txHash          String?         @map("tx_hash")
+  timestamp       DateTime        @default(now())
+
+  request AccessRequest? @relation(fields: [requestId], references: [id])
+  actor   User           @relation("ActorAccess", fields: [actorUserId], references: [id])
+  patient Patient        @relation("PatientAccessLogs", fields: [patientId], references: [id])
+  record  MedicalRecord? @relation(fields: [recordId], references: [id])
+
+  @@map("access_logs")
+}
+
+model BiometricLog {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  status      String
+  deviceId    String   @map("device_id")
+  attemptTime DateTime @default(now()) @map("attempt_time")
+  reason      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("biometric_logs")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorUserId  String   @map("actor_user_id")
+  action       String
+  targetType   String   @map("target_type")
+  targetId     String   @map("target_id")
+  decision     String
+  reason       String?
+  metadataHash String   @map("metadata_hash")
+  txHash       String?  @map("tx_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  actor User @relation(fields: [actorUserId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model SystemConfig {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_config")
+}

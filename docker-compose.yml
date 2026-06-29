@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ehr-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ehr_user
+      POSTGRES_PASSWORD: ehr_password
+      POSTGRES_DB: ehr_smart_consent
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ehr_user -d ehr_smart_consent']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  hardhat:
+    build:
+      context: ./contracts
+      dockerfile: Dockerfile.hardhat
+    container_name: ehr-hardhat
+    ports:
+      - '8545:8545'
+    profiles:
+      - blockchain
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ehr-backend
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    environment:
+      DATABASE_URL: postgresql://ehr_user:ehr_password@postgres:5432/ehr_smart_consent
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      BLOCKCHAIN_RPC_URL: ${BLOCKCHAIN_RPC_URL:-http://hardhat:8545}
+      CONTRACT_ADDRESS: ${CONTRACT_ADDRESS:-}
+      PRIVATE_KEY: ${PRIVATE_KEY:-0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80}
+      FRONTEND_URL: http://localhost:5173
+      NODE_ENV: production
+      PORT: 3001
+      FINGERPRINT_MODE: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - full
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: ehr-frontend
+    restart: unless-stopped
+    ports:
+      - '5173:80'
+    depends_on:
+      - backend
+    profiles:
+      - full
+
+volumes:
+  postgres_data:

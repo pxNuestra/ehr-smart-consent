@@ -1,0 +1,32 @@
+{
+  "name": "ehr-smart-consent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EHR Smart Consent System - Patient-Centric Access Control with Blockchain Informed Consent",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "contracts"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=contracts && npm run build --workspace=backend && npm run build --workspace=frontend",
+    "start": "npm run start --workspace=backend",
+    "seed": "npm run seed --workspace=backend",
+    "migrate": "npm run migrate --workspace=backend",
+    "test": "npm run test --workspace=backend && npm run contract:test",
+    "contract:compile": "npm run compile --workspace=contracts",
+    "contract:test": "npm run test --workspace=contracts",
+    "contract:deploy:local": "npm run deploy:local --workspace=contracts",
+    "contract:deploy:sepolia": "npm run deploy:sepolia --workspace=contracts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
