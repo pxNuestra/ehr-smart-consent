@@ -33,25 +33,25 @@ router.use(authenticate);
 
 router.post('/grant', authorize('PATIENT'), validateBody(grantSchema), async (req, res) => {
   const patient = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
-  if (!patient) return res.status(404).json({ error: 'Patient profile not found' });
+  if (!patient) return res.status(404).json({ error: 'Profil pasien tidak ditemukan' });
 
   const grantee = await prisma.user.findUnique({ where: { id: req.body.granteeUserId } });
   if (!grantee || grantee.role !== 'DOCTOR') {
-    return res.status(400).json({ error: 'Grantee must be a doctor' });
+    return res.status(400).json({ error: 'Penerima akses harus dokter' });
   }
 
   let recordHash = metadataHash({ patientId: patient.id, scope: req.body.accessScope });
   if (req.body.recordId) {
     const record = await prisma.medicalRecord.findUnique({ where: { id: req.body.recordId } });
     if (!record || record.patientId !== patient.id) {
-      return res.status(400).json({ error: 'Invalid record' });
+      return res.status(400).json({ error: 'Rekam medis tidak valid' });
     }
     recordHash = record.recordHash;
   }
 
   const startTime = req.body.startTime ? new Date(req.body.startTime) : new Date();
   const endTime = new Date(req.body.endTime);
-  if (endTime <= startTime) return res.status(400).json({ error: 'End time must be after start time' });
+  if (endTime <= startTime) return res.status(400).json({ error: 'Waktu akhir harus setelah waktu mulai' });
 
   const meta = {
     patientId: patient.id,
@@ -114,7 +114,7 @@ router.put('/:id/limit', authorize('PATIENT'), validateBody(limitSchema), async 
   const patient = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
   const consent = await prisma.consentShadow.findUnique({ where: { id: paramId(req.params.id) } });
   if (!consent || consent.patientId !== patient?.id) {
-    return res.status(404).json({ error: 'Consent not found' });
+    return res.status(404).json({ error: 'Consent tidak ditemukan' });
   }
   if (consent.status === 'REVOKED') {
     return res.status(400).json({ error: 'Consent already revoked' });
@@ -153,7 +153,7 @@ router.post('/:id/revoke', authorize('PATIENT'), async (req, res) => {
   const patient = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
   const consent = await prisma.consentShadow.findUnique({ where: { id: paramId(req.params.id) } });
   if (!consent || consent.patientId !== patient?.id) {
-    return res.status(404).json({ error: 'Consent not found' });
+    return res.status(404).json({ error: 'Consent tidak ditemukan' });
   }
 
   const txHash = await revokeAccessOnChain(consent.blockchainConsentId);
@@ -178,7 +178,7 @@ router.post('/:id/revoke', authorize('PATIENT'), async (req, res) => {
 router.get('/patient/:patientId', authorize('PATIENT', 'DOCTOR', 'ADMIN', 'AUDITOR'), async (req, res) => {
   if (req.user!.role === 'PATIENT') {
     const own = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
-    if (own?.id !== paramId(req.params.patientId)) return res.status(403).json({ error: 'Forbidden' });
+    if (own?.id !== paramId(req.params.patientId)) return res.status(403).json({ error: 'Akses ditolak' });
   }
 
   const consents = await prisma.consentShadow.findMany({

@@ -89,7 +89,7 @@ router.put('/:id', authorize('ADMIN'), async (req, res) => {
 
 router.delete('/:id', authorize('ADMIN'), async (req, res) => {
   await prisma.user.delete({ where: { id: paramId(req.params.id) } });
-  res.json({ message: 'User deleted' });
+  res.json({ message: 'User berhasil dihapus' });
 });
 
 export default router;

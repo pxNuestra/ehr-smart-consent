@@ -32,10 +32,10 @@ router.get('/:id', authorize('ADMIN', 'DOCTOR', 'PATIENT'), async (req, res) => 
     where: { id: paramId(req.params.id) },
     include: { user: { select: { id: true, username: true, email: true, role: true } } },
   });
-  if (!patient) return res.status(404).json({ error: 'Patient not found' });
+  if (!patient) return res.status(404).json({ error: 'Pasien tidak ditemukan' });
   if (req.user!.role === 'PATIENT') {
     const own = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
-    if (own?.id !== patient.id) return res.status(403).json({ error: 'Forbidden' });
+    if (own?.id !== patient.id) return res.status(403).json({ error: 'Akses ditolak' });
   }
   res.json({
     id: patient.id,
@@ -58,7 +58,7 @@ router.put('/:id', authorize('ADMIN', 'PATIENT'), async (req, res) => {
   const { gender, age } = req.body;
   if (req.user!.role === 'PATIENT') {
     const own = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
-    if (own?.id !== paramId(req.params.id)) return res.status(403).json({ error: 'Forbidden' });
+    if (own?.id !== paramId(req.params.id)) return res.status(403).json({ error: 'Akses ditolak' });
   }
   const patient = await prisma.patient.update({
     where: { id: paramId(req.params.id) },

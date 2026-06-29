@@ -21,7 +21,7 @@ router.use(authenticate);
 
 router.post('/enroll', validateBody(enrollSchema), async (req, res) => {
   const result = await enrollFingerprint(req.user!.id, req.body.sampleData, req.body.deviceId);
-  if (!result.success) return res.status(400).json({ error: 'Enrollment failed' });
+  if (!result.success) return res.status(400).json({ error: 'Pendaftaran sidik jari gagal' });
   res.status(201).json(result);
 });
 

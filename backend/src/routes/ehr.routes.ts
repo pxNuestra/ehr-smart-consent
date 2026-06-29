@@ -23,7 +23,7 @@ router.use(authenticate);
 router.get('/patient/:patientId', authorize('DOCTOR', 'PATIENT', 'ADMIN'), async (req, res) => {
   if (req.user!.role === 'PATIENT') {
     const own = await prisma.patient.findUnique({ where: { userId: req.user!.id } });
-    if (own?.id !== paramId(req.params.patientId)) return res.status(403).json({ error: 'Forbidden' });
+    if (own?.id !== paramId(req.params.patientId)) return res.status(403).json({ error: 'Akses ditolak' });
     // Patients see metadata only, not decrypted clinical data via this endpoint
     const records = await prisma.medicalRecord.findMany({
       where: { patientId: paramId(req.params.patientId) },
@@ -40,8 +40,8 @@ router.get('/patient/:patientId', authorize('DOCTOR', 'PATIENT', 'ADMIN'), async
 
   if (req.user!.role === 'ADMIN') {
     return res.status(403).json({
-      error: 'Admin cannot access clinical data',
-      message: 'Administrators manage accounts only, not patient clinical records.',
+      error: 'Admin tidak bisa mengakses data klinis',
+      message: 'Admin hanya mengelola akun, bukan rekam medis klinis pasien.',
     });
   }
 
@@ -101,7 +101,7 @@ router.post('/', authorize('DOCTOR', 'ADMIN'), validateBody(ehrSchema), async (r
 
 router.put('/:id', authorize('DOCTOR'), async (req, res) => {
   const existing = await prisma.medicalRecord.findUnique({ where: { id: paramId(req.params.id) } });
-  if (!existing) return res.status(404).json({ error: 'Record not found' });
+  if (!existing) return res.status(404).json({ error: 'Rekam medis tidak ditemukan' });
 
   const clinical = {
     diagnosis: req.body.diagnosis ? req.body.diagnosis : decrypt(existing.diagnosisEncrypted),
@@ -132,7 +132,7 @@ router.get('/:id/hash', authorize('DOCTOR', 'PATIENT', 'AUDITOR'), async (req, r
     where: { id: paramId(req.params.id) },
     select: { id: true, recordCode: true, recordHash: true, recordDate: true },
   });
-  if (!record) return res.status(404).json({ error: 'Record not found' });
+  if (!record) return res.status(404).json({ error: 'Rekam medis tidak ditemukan' });
   res.json(record);
 });
 

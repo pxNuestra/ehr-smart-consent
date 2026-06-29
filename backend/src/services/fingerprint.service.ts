@@ -29,22 +29,22 @@ class DevelopmentFingerprintAdapter {
     });
 
     if (!template) {
-      return { success: false, reason: 'No fingerprint enrolled' };
+      return { success: false, reason: 'Sidik jari belum terdaftar' };
     }
 
     const expectedHash = hashData(`${userId}:${sampleData}:${deviceId}`);
     const altHash = hashData(`${userId}:demo-fingerprint:${deviceId}`);
 
     if (expectedHash === template.fingerprintHash || altHash === template.fingerprintHash) {
-      return { success: true, reason: 'Fingerprint verified', templateId: template.templateId };
+      return { success: true, reason: 'Sidik jari terverifikasi', templateId: template.templateId };
     }
 
     // Allow "demo-fingerprint" as universal dev sample
     if (sampleData === 'demo-fingerprint') {
-      return { success: true, reason: 'Demo fingerprint verified', templateId: template.templateId };
+      return { success: true, reason: 'Sidik jari demo terverifikasi', templateId: template.templateId };
     }
 
-    return { success: false, reason: 'Fingerprint failed - no match' };
+    return { success: false, reason: 'Sidik jari gagal, tidak cocok' };
   }
 }
 
@@ -61,12 +61,12 @@ class ProductionFingerprintAdapter {
       where: { userId, deviceId },
       orderBy: { enrolledAt: 'desc' },
     });
-    if (!template) return { success: false, reason: 'No fingerprint enrolled for device' };
+    if (!template) return { success: false, reason: 'Sidik jari belum terdaftar untuk device ini' };
     const scanHash = hashData(sampleData);
     if (scanHash === template.fingerprintHash) {
-      return { success: true, reason: 'Fingerprint verified', templateId: template.templateId };
+      return { success: true, reason: 'Sidik jari terverifikasi', templateId: template.templateId };
     }
-    return { success: false, reason: 'Fingerprint failed - no match' };
+    return { success: false, reason: 'Sidik jari gagal, tidak cocok' };
   }
 }
 
@@ -91,7 +91,7 @@ export async function enrollFingerprint(
       },
     });
     await prisma.biometricLog.create({
-      data: { userId, status: 'ENROLLED', deviceId, reason: 'Fingerprint enrolled' },
+      data: { userId, status: 'ENROLLED', deviceId, reason: 'Sidik jari terdaftar' },
     });
   }
   return result;

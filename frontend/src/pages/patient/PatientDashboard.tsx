@@ -26,22 +26,22 @@ export default function PatientDashboard() {
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Patient Dashboard</h1>
-        <p className="text-slate-500">Welcome, {user?.username}</p>
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard Pasien</h1>
+        <p className="text-slate-500">Selamat datang, {user?.username}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard label="Active Consents" value={active} icon={<Shield size={24} />} />
-        <StatCard label="Revoked Consents" value={revoked} icon={<History size={24} />} />
-        <StatCard label="Patient Code" value={profile?.profile?.patientCode || '-'} icon={<Users size={24} />} />
+        <StatCard label="Consent Aktif" value={active} icon={<Shield size={24} />} />
+        <StatCard label="Consent Dicabut" value={revoked} icon={<History size={24} />} />
+        <StatCard label="Kode Pasien" value={profile?.profile?.patientCode || '-'} icon={<Users size={24} />} />
       </div>
 
       <Card>
-        <CardHeader title="Your Profile" subtitle="Non-clinical identity information" />
+        <CardHeader title="Profil Lu" subtitle="Informasi identitas non-klinis" />
         <dl className="grid gap-4 sm:grid-cols-2">
-          <div><dt className="text-sm text-slate-500">Patient Code</dt><dd className="font-medium">{profile?.profile?.patientCode}</dd></div>
-          <div><dt className="text-sm text-slate-500">Gender</dt><dd className="font-medium">{profile?.profile?.gender}</dd></div>
-          <div><dt className="text-sm text-slate-500">Age</dt><dd className="font-medium">{profile?.profile?.age}</dd></div>
+          <div><dt className="text-sm text-slate-500">Kode Pasien</dt><dd className="font-medium">{profile?.profile?.patientCode}</dd></div>
+          <div><dt className="text-sm text-slate-500">Jenis Kelamin</dt><dd className="font-medium">{profile?.profile?.gender}</dd></div>
+          <div><dt className="text-sm text-slate-500">Umur</dt><dd className="font-medium">{profile?.profile?.age}</dd></div>
           <div><dt className="text-sm text-slate-500">Email</dt><dd className="font-medium">{user?.email}</dd></div>
         </dl>
       </Card>

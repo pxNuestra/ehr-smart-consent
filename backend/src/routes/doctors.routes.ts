@@ -27,7 +27,7 @@ router.get('/:id', authorize('ADMIN', 'PATIENT', 'DOCTOR'), async (req, res) => 
     where: { id: paramId(req.params.id) },
     include: { user: { select: { id: true, username: true, email: true } } },
   });
-  if (!doctor) return res.status(404).json({ error: 'Doctor not found' });
+  if (!doctor) return res.status(404).json({ error: 'Dokter tidak ditemukan' });
   res.json({
     id: doctor.id,
     userId: doctor.userId,

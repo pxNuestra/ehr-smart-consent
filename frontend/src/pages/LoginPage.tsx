@@ -17,10 +17,10 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(username, password);
-      toast.success('Login successful');
+      toast.success('Login berhasil');
       navigate('/');
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Login failed';
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Login gagal';
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -32,22 +32,22 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <div className="mb-6 text-center">
           <Stethoscope className="mx-auto text-primary-600" size={40} />
-          <h1 className="mt-3 text-2xl font-bold text-slate-900">Sign In</h1>
-          <p className="text-sm text-slate-500">Hibah - PatientCentric Access Control Rekam Medis Elektronik</p>
+          <h1 className="mt-3 text-2xl font-bold text-slate-900">Masuk</h1>
+          <p className="text-sm text-slate-500">Hibah - Kontrol Akses Rekam Medis Elektronik Berbasis Pasien</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Username or Email" value={username} onChange={(e) => setUsername(e.target.value)} required />
-          <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <Input label="Username atau Email" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <Input label="Kata Sandi" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Sedang masuk...' : 'Masuk'}
           </Button>
         </form>
         <div className="mt-6 rounded-lg bg-slate-50 p-4 text-xs text-slate-600">
-          <p className="font-medium">Demo accounts (Password123!):</p>
+          <p className="font-medium">Akun demo (Password123!):</p>
           <p>patient1 · doctor1 · admin1 · auditor1</p>
         </div>
         <p className="mt-4 text-center text-sm text-slate-500">
-          <Link to="/" className="text-primary-600 hover:underline">Back to home</Link>
+          <Link to="/" className="text-primary-600 hover:underline">Kembali ke beranda</Link>
         </p>
       </Card>
     </div>

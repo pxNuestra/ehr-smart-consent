@@ -9,24 +9,24 @@ import clsx from 'clsx';
 const menuByRole: Record<string, { to: string; label: string; icon: React.ReactNode }[]> = {
   PATIENT: [
     { to: '/patient/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { to: '/patient/consents', label: 'Consent Management', icon: <Shield size={20} /> },
-    { to: '/patient/access-history', label: 'Access History', icon: <History size={20} /> },
+    { to: '/patient/consents', label: 'Manajemen Consent', icon: <Shield size={20} /> },
+    { to: '/patient/access-history', label: 'Riwayat Akses', icon: <History size={20} /> },
   ],
   DOCTOR: [
     { to: '/doctor/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { to: '/doctor/request-access', label: 'Request Access', icon: <FileSearch size={20} /> },
-    { to: '/doctor/ehr-viewer', label: 'EHR Viewer', icon: <Eye size={20} /> },
+    { to: '/doctor/request-access', label: 'Minta Akses', icon: <FileSearch size={20} /> },
+    { to: '/doctor/ehr-viewer', label: 'Lihat RME', icon: <Eye size={20} /> },
   ],
   ADMIN: [
     { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { to: '/admin/users', label: 'User Management', icon: <Users size={20} /> },
-    { to: '/admin/roles', label: 'Role Management', icon: <Shield size={20} /> },
-    { to: '/admin/config', label: 'System Config', icon: <Settings size={20} /> },
+    { to: '/admin/users', label: 'Manajemen User', icon: <Users size={20} /> },
+    { to: '/admin/roles', label: 'Manajemen Peran', icon: <Shield size={20} /> },
+    { to: '/admin/config', label: 'Konfigurasi Sistem', icon: <Settings size={20} /> },
   ],
   AUDITOR: [
     { to: '/auditor/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { to: '/auditor/logs', label: 'Audit Logs', icon: <ClipboardList size={20} /> },
-    { to: '/auditor/transactions', label: 'Transactions', icon: <Activity size={20} /> },
+    { to: '/auditor/logs', label: 'Log Audit', icon: <ClipboardList size={20} /> },
+    { to: '/auditor/transactions', label: 'Transaksi', icon: <Activity size={20} /> },
   ],
 };
 
@@ -42,7 +42,7 @@ export default function Sidebar() {
           <Stethoscope className="text-primary-600" size={28} />
           <div>
             <p className="text-sm font-bold text-primary-800">EHR Smart</p>
-            <p className="text-xs text-slate-500">Consent System</p>
+            <p className="text-xs text-slate-500">Sistem Consent</p>
           </div>
         </div>
         <nav className="flex-1 space-y-1 p-4">

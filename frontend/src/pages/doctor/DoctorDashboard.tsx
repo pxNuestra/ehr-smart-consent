@@ -15,10 +15,10 @@ export default function DoctorDashboard() {
   const verifyMutation = useMutation({
     mutationFn: () => api.post('/biometric/verify', { sampleData: 'demo-fingerprint', deviceId: 'DEV-SCANNER-001' }),
     onSuccess: (res) => {
-      if (res.data.success) toast.success('Fingerprint verified');
-      else toast.error(res.data.reason || 'Fingerprint failed');
+      if (res.data.success) toast.success('Sidik jari terverifikasi');
+      else toast.error(res.data.reason || 'Sidik jari gagal');
     },
-    onError: () => toast.error('Verification error'),
+    onError: () => toast.error('Verifikasi error'),
   });
 
   const pending = requests?.data?.filter((r: { status: string }) => r.status === 'PENDING').length || 0;
@@ -27,30 +27,30 @@ export default function DoctorDashboard() {
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
       <div>
-        <h1 className="text-2xl font-bold">Doctor Dashboard</h1>
-        <p className="text-slate-500">Welcome, Dr. {user?.username}</p>
+        <h1 className="text-2xl font-bold">Dashboard Dokter</h1>
+        <p className="text-slate-500">Selamat datang, Dr. {user?.username}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard label="Pending Requests" value={pending} icon={<FileSearch size={24} />} />
-        <StatCard label="Completed Access" value={completed} icon={<CheckCircle size={24} />} />
-        <StatCard label="Biometric" value="Required" icon={<Fingerprint size={24} />} />
+        <StatCard label="Request Menunggu" value={pending} icon={<FileSearch size={24} />} />
+        <StatCard label="Akses Selesai" value={completed} icon={<CheckCircle size={24} />} />
+        <StatCard label="Biometrik" value="Wajib" icon={<Fingerprint size={24} />} />
       </div>
 
       <Card>
-        <CardHeader title="Biometric Verification" subtitle="Verify fingerprint before accessing EHR" />
+        <CardHeader title="Biometrik Verification" subtitle="Verifikasi sidik jari sebelum akses RME" />
         <p className="mb-4 text-sm text-slate-600">
-          Development mode: use sample <code className="rounded bg-slate-100 px-1">demo-fingerprint</code> with device DEV-SCANNER-001
+          Mode development: pakai sample <code className="rounded bg-slate-100 px-1">demo-fingerprint</code> dengan device DEV-SCANNER-001
         </p>
         <Button onClick={() => verifyMutation.mutate()} disabled={verifyMutation.isPending}>
           <Fingerprint size={18} className="mr-2" />
-          {verifyMutation.isPending ? 'Verifying...' : 'Verify Fingerprint'}
+          {verifyMutation.isPending ? 'Memverifikasi...' : 'Verifikasi Sidik Jari'}
         </Button>
       </Card>
 
       {isLoading ? <LoadingSkeleton /> : (
         <Card>
-          <CardHeader title="Recent Access Requests" />
+          <CardHeader title="Request Akses Terbaru" />
           <div className="space-y-2">
             {requests?.data?.slice(0, 5).map((r: { id: string; patient?: { patientCode: string }; status: string; requestTime: string }) => (
               <div key={r.id} className="flex justify-between rounded-lg border border-slate-100 p-3 text-sm">

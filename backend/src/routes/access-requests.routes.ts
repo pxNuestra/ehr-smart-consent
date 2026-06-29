@@ -27,11 +27,11 @@ router.use(authenticate);
 
 router.post('/', authorize('DOCTOR'), validateBody(requestSchema), async (req, res) => {
   const doctor = await prisma.doctor.findUnique({ where: { userId: req.user!.id } });
-  if (!doctor) return res.status(404).json({ error: 'Doctor profile not found' });
+  if (!doctor) return res.status(404).json({ error: 'Profil dokter tidak ditemukan' });
 
   const record = await prisma.medicalRecord.findUnique({ where: { id: req.body.recordId } });
   if (!record || record.patientId !== req.body.patientId) {
-    return res.status(400).json({ error: 'Invalid record for patient' });
+    return res.status(400).json({ error: 'Rekam medis tidak cocok dengan pasien' });
   }
 
   const request = await prisma.accessRequest.create({
@@ -92,7 +92,7 @@ router.get('/:id', authorize('DOCTOR', 'PATIENT', 'ADMIN', 'AUDITOR'), async (re
       accessLogs: true,
     },
   });
-  if (!request) return res.status(404).json({ error: 'Request not found' });
+  if (!request) return res.status(404).json({ error: 'Request tidak ditemukan' });
   res.json(request);
 });
 
@@ -104,9 +104,9 @@ router.post('/:id/verify-and-open', authorize('DOCTOR'), validateBody(verifyOpen
       patient: true,
     },
   });
-  if (!accessRequest) return res.status(404).json({ error: 'Request not found' });
+  if (!accessRequest) return res.status(404).json({ error: 'Request tidak ditemukan' });
   if (accessRequest.requesterUserId !== req.user!.id) {
-    return res.status(403).json({ error: 'Not your access request' });
+    return res.status(403).json({ error: 'Ini bukan request akses milik lu' });
   }
 
   const fpResult = await verifyFingerprint(
@@ -121,7 +121,7 @@ router.post('/:id/verify-and-open', authorize('DOCTOR'), validateBody(verifyOpen
   let ehrData = null;
 
   if (!fpResult.success) {
-    reason = 'Fingerprint failed';
+    reason = 'Sidik jari gagal';
   } else {
     const patientPseudo = pseudonymousId('patient', accessRequest.patientId);
     const requesterPseudo = pseudonymousId('doctor', req.user!.id);
@@ -148,16 +148,16 @@ router.post('/:id/verify-and-open', authorize('DOCTOR'), validateBody(verifyOpen
     });
 
     if (!shadowConsent) {
-      reason = 'No active consent';
+      reason = 'Tidak ada consent aktif';
     } else if (shadowConsent.status === ConsentStatus.REVOKED) {
-      reason = 'Consent revoked';
+      reason = 'Consent sudah dicabut';
     } else if (shadowConsent.endTime < new Date()) {
-      reason = 'Consent expired';
-    } else if (!consentCheck.allowed && consentCheck.reason !== 'Blockchain unavailable') {
+      reason = 'Consent sudah kedaluwarsa';
+    } else if (!consentCheck.allowed && consentCheck.reason !== 'Blockchain tidak tersedia') {
       reason = consentCheck.reason;
     } else {
       decision = AccessDecision.ALLOWED;
-      reason = 'Access granted';
+      reason = 'Akses diberikan';
       ehrData = {
         id: accessRequest.record.id,
         recordCode: accessRequest.record.recordCode,

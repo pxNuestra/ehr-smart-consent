@@ -8,7 +8,7 @@ export function validateBody(schema: ZodSchema) {
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        return res.status(400).json({ error: 'Validation failed', details: err.errors });
+        return res.status(400).json({ error: 'Validasi gagal', details: err.errors });
       }
       next(err);
     }
@@ -22,7 +22,7 @@ export function validateQuery(schema: ZodSchema) {
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        return res.status(400).json({ error: 'Validation failed', details: err.errors });
+        return res.status(400).json({ error: 'Validasi gagal', details: err.errors });
       }
       next(err);
     }

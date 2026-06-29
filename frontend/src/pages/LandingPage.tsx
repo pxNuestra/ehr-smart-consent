@@ -12,32 +12,31 @@ export default function LandingPage() {
             <span className="text-xl font-bold text-primary-800">Hibah</span>
           </div>
           <div className="flex gap-3">
-            <Link to="/login"><Button variant="outline">Login</Button></Link>
-            <Link to="/register"><Button>Get Started</Button></Link>
+            <Link to="/login"><Button variant="outline">Masuk</Button></Link>
+            <Link to="/register"><Button>Mulai</Button></Link>
           </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-20 text-center">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
-          Patient-Centric Access Control for{' '}
-          <span className="text-primary-600">Electronic Health Records</span>
+          Kontrol Akses Berbasis Pasien untuk{' '}
+          <span className="text-primary-600">Rekam Medis Elektronik</span>
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
-          Empower patients to grant, limit, and revoke consent. Doctors access EHR only with
-          valid fingerprint and active blockchain-verified consent. Clinical data stays encrypted off-chain.
+          Pasien bisa memberi, membatasi, dan mencabut persetujuan akses. Dokter hanya bisa membuka RME dengan sidik jari valid dan consent aktif yang diverifikasi blockchain. Data klinis tetap terenkripsi off-chain.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <Link to="/login"><Button className="gap-2 px-6 py-3">Access Portal <ArrowRight size={18} /></Button></Link>
-          <Link to="/register"><Button variant="outline" className="px-6 py-3">Admin Setup</Button></Link>
+          <Link to="/login"><Button className="gap-2 px-6 py-3">Masuk Portal <ArrowRight size={18} /></Button></Link>
+          <Link to="/register"><Button variant="outline" className="px-6 py-3">Setup Admin</Button></Link>
         </div>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-6 px-4 pb-20 md:grid-cols-3">
         {[
-          { icon: <Shield className="text-primary-600" size={32} />, title: 'Informed Consent', desc: 'Patients control who accesses their data, for what purpose, and for how long.' },
-          { icon: <Fingerprint className="text-secondary-600" size={32} />, title: 'Biometric Verification', desc: 'Doctors must verify fingerprint before viewing any clinical record.' },
-          { icon: <Link2 className="text-primary-600" size={32} />, title: 'Blockchain Audit Trail', desc: 'Consent events and access logs recorded on-chain with integrity hashes.' },
+          { icon: <Shield className="text-primary-600" size={32} />, title: 'Persetujuan Akses', desc: 'Pasien mengatur siapa yang bisa akses data, untuk tujuan apa, dan sampai kapan.' },
+          { icon: <Fingerprint className="text-secondary-600" size={32} />, title: 'Verifikasi Biometrik', desc: 'Dokter wajib verifikasi sidik jari sebelum membuka rekam medis.' },
+          { icon: <Link2 className="text-primary-600" size={32} />, title: 'Jejak Audit Blockchain', desc: 'Consent dan log akses dicatat on-chain memakai hash integritas.' },
         ].map((f) => (
           <div key={f.title} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-4">{f.icon}</div>
@@ -48,7 +47,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-slate-200 bg-white py-8 text-center text-sm text-slate-500">
-        &copy; {new Date().getFullYear()} Hibah. All rights reserved.
+        &copy; {new Date().getFullYear()} Hibah. Hak cipta dilindungi.
       </footer>
     </div>
   );

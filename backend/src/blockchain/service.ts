@@ -116,7 +116,7 @@ export async function checkConsentOnChain(params: {
 }): Promise<{ allowed: boolean; consentId: number; reason: string }> {
   const { contract, available } = getBlockchainService();
   if (!available || !contract) {
-    return { allowed: false, consentId: 0, reason: 'Blockchain unavailable' };
+    return { allowed: false, consentId: 0, reason: 'Blockchain tidak tersedia' };
   }
   const [allowed, consentId, reason] = await contract.checkConsentWithRole(
     toBytes32(params.patientId),

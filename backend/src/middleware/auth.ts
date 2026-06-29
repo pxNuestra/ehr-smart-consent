@@ -22,7 +22,7 @@ declare global {
 export function authenticate(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Wajib login dulu' });
   }
   try {
     const token = header.slice(7);
@@ -30,15 +30,15 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     req.user = payload;
     next();
   } catch {
-    return res.status(401).json({ error: 'Invalid or expired token' });
+    return res.status(401).json({ error: 'Token tidak valid atau sudah kedaluwarsa' });
   }
 }
 
 export function authorize(...roles: UserRole[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) return res.status(401).json({ error: 'Authentication required' });
+    if (!req.user) return res.status(401).json({ error: 'Wajib login dulu' });
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Forbidden - insufficient role' });
+      return res.status(403).json({ error: 'Akses ditolak, peran tidak cukup' });
     }
     next();
   };

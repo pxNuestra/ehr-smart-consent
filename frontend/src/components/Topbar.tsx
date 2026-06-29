@@ -2,6 +2,7 @@ import { LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { roleLabel } from '../lib/format';
 
 export default function Topbar() {
   const { user, logout } = useAuth();
@@ -9,7 +10,7 @@ export default function Topbar() {
 
   const handleLogout = async () => {
     await logout();
-    toast.success('Logged out successfully');
+    toast.success('Berhasil logout');
     navigate('/login');
   };
 
@@ -26,7 +27,7 @@ export default function Topbar() {
           </div>
           <div className="hidden sm:block">
             <p className="font-medium text-slate-900">{user?.username}</p>
-            <p className="text-xs capitalize text-slate-500">{user?.role?.toLowerCase()}</p>
+            <p className="text-xs text-slate-500">{roleLabel(user?.role)}</p>
           </div>
         </div>
         <button
@@ -34,7 +35,7 @@ export default function Topbar() {
           className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-100"
         >
           <LogOut size={16} />
-          <span className="hidden sm:inline">Logout</span>
+          <span className="hidden sm:inline">Keluar</span>
         </button>
       </div>
     </header>

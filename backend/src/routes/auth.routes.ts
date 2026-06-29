@@ -28,10 +28,10 @@ router.post('/login', validateBody(loginSchema), async (req, res) => {
     where: { OR: [{ username }, { email: username }] },
   });
   if (!user || user.status !== 'ACTIVE') {
-    return res.status(401).json({ error: 'Invalid credentials' });
+    return res.status(401).json({ error: 'Username/email atau kata sandi salah' });
   }
   const valid = await bcrypt.compare(password, user.passwordHash);
-  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+  if (!valid) return res.status(401).json({ error: 'Username/email atau kata sandi salah' });
 
   const token = jwt.sign(
     { id: user.id, username: user.username, email: user.email, role: user.role },
@@ -63,7 +63,7 @@ router.post('/logout', authenticate, async (req, res) => {
     decision: 'ALLOWED',
     metadataHash: metadataHash({ action: 'logout' }),
   });
-  res.json({ message: 'Logged out' });
+  res.json({ message: 'Berhasil logout' });
 });
 
 router.get('/me', authenticate, async (req, res) => {
@@ -71,7 +71,7 @@ router.get('/me', authenticate, async (req, res) => {
     where: { id: req.user!.id },
     select: { id: true, username: true, email: true, role: true, status: true, createdAt: true },
   });
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  if (!user) return res.status(404).json({ error: 'User tidak ditemukan' });
 
   let profile = null;
   if (user.role === 'PATIENT') {
@@ -86,14 +86,14 @@ router.get('/me', authenticate, async (req, res) => {
 router.post('/register', validateBody(registerSchema), async (req, res) => {
   const setupMode = process.env.SETUP_MODE === 'true' || process.env.NODE_ENV === 'development';
   if (!setupMode) {
-    return res.status(403).json({ error: 'Registration disabled. Contact admin.' });
+    return res.status(403).json({ error: 'Registrasi dimatikan. Hubungi admin.' });
   }
 
   const { username, email, password, role } = req.body;
   const existing = await prisma.user.findFirst({
     where: { OR: [{ username }, { email }] },
   });
-  if (existing) return res.status(409).json({ error: 'User already exists' });
+  if (existing) return res.status(409).json({ error: 'User sudah ada' });
 
   const passwordHash = await bcrypt.hash(password, 12);
   const user = await prisma.user.create({

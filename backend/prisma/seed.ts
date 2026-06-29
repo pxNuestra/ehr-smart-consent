@@ -38,7 +38,7 @@ const treatments = [
 ];
 
 async function main() {
-  console.log('Seeding database...');
+  console.log('Mengisi database...');
   await prisma.$transaction([
     prisma.accessLog.deleteMany(),
     prisma.accessRequest.deleteMany(),
@@ -225,7 +225,7 @@ async function main() {
         recordId: record.id,
         purpose: 'treatment',
         status: i % 3 === 0 ? AccessRequestStatus.COMPLETED : i % 3 === 1 ? AccessRequestStatus.DENIED : AccessRequestStatus.PENDING,
-        reason: i % 3 === 1 ? 'No active consent' : undefined,
+        reason: i % 3 === 1 ? 'Tidak ada consent aktif' : undefined,
       },
     });
     requests.push(request);
@@ -244,7 +244,7 @@ async function main() {
         biometricStatus: allowed ? BiometricStatus.VERIFIED : BiometricStatus.FAILED,
         consentStatus: allowed ? 'ACTIVE' : 'DENIED',
         decision: allowed ? AccessDecision.ALLOWED : AccessDecision.DENIED,
-        reason: allowed ? 'Access granted' : i % 4 === 1 ? 'Fingerprint failed' : 'Consent revoked',
+        reason: allowed ? 'Akses diberikan' : i % 4 === 1 ? 'Sidik jari gagal' : 'Consent sudah dicabut',
         metadataHash: metadataHash({ i, requestId: request.id }),
         txHash: `0xlog${String(i + 1).padStart(60, '0')}`,
       },
@@ -261,7 +261,7 @@ async function main() {
         targetType: ['user', 'consent', 'medical_record'][i % 3],
         targetId: `target-${i}`,
         decision: i % 5 === 0 ? 'DENIED' : 'ALLOWED',
-        reason: i % 5 === 0 ? 'Policy violation' : undefined,
+        reason: i % 5 === 0 ? 'Melanggar kebijakan' : undefined,
         metadataHash: metadataHash({ audit: i }),
         txHash: i % 2 === 0 ? `0xaudit${String(i).padStart(58, '0')}` : undefined,
       },
@@ -278,10 +278,10 @@ async function main() {
     ],
   });
 
-  console.log('Seed completed!');
+  console.log('Seed selesai!');
   console.log('\nDemo accounts (password: Password123!):');
-  console.log('  Patient:  patient1@ehr.local / patient1');
-  console.log('  Doctor:   doctor1@ehr.local / doctor1');
+  console.log('  Pasien:  patient1@ehr.local / patient1');
+  console.log('  Dokter:   doctor1@ehr.local / doctor1');
   console.log('  Admin:    admin1@ehr.local / admin1');
   console.log('  Auditor:  auditor1@ehr.local / auditor1');
   console.log('\nFingerprint demo sample: demo-fingerprint (device: DEV-SCANNER-001)');

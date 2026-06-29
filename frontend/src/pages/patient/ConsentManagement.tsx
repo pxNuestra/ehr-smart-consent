@@ -5,12 +5,13 @@ import api from '../../lib/api';
 import { Consent } from '../../types';
 import { Card, CardHeader, Button, Select, Input, Modal, LoadingSkeleton, EmptyState } from '../../components/ui';
 import { StatusBadge } from '../../components/StatusBadge';
+import { purposeLabel, scopeLabel } from '../../lib/format';
 
 export default function ConsentManagement() {
   const queryClient = useQueryClient();
   const [grantOpen, setGrantOpen] = useState(false);
-  const [limitOpen, setLimitOpen] = useState<Consent | null>(null);
-  const [revokeOpen, setRevokeOpen] = useState<Consent | null>(null);
+  const [limitOpen, setBatasiOpen] = useState<Consent | null>(null);
+  const [revokeOpen, setCabutOpen] = useState<Consent | null>(null);
   const [form, setForm] = useState({ granteeUserId: '', accessScope: 'full_ehr', purpose: 'treatment', endTime: '' });
 
   const { data: profile } = useQuery({
@@ -33,32 +34,32 @@ export default function ConsentManagement() {
   const grantMutation = useMutation({
     mutationFn: (data: typeof form) => api.post('/consents/grant', { ...data, endTime: new Date(data.endTime).toISOString() }),
     onSuccess: () => {
-      toast.success('Consent granted on blockchain');
+      toast.success('Consent berhasil dicatat di blockchain');
       queryClient.invalidateQueries({ queryKey: ['patient-consents'] });
       setGrantOpen(false);
     },
-    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Failed'),
+    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Gagal'),
   });
 
   const limitMutation = useMutation({
     mutationFn: ({ id, limitationType, newValue }: { id: string; limitationType: string; newValue: string }) =>
       api.put(`/consents/${id}/limit`, { limitationType, newValue }),
     onSuccess: () => {
-      toast.success('Consent limited');
+      toast.success('Consent berhasil dibatasi');
       queryClient.invalidateQueries({ queryKey: ['patient-consents'] });
-      setLimitOpen(null);
+      setBatasiOpen(null);
     },
-    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Failed'),
+    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Gagal'),
   });
 
   const revokeMutation = useMutation({
     mutationFn: (id: string) => api.post(`/consents/${id}/revoke`),
     onSuccess: () => {
-      toast.success('Consent revoked');
+      toast.success('Consent berhasil dicabut');
       queryClient.invalidateQueries({ queryKey: ['patient-consents'] });
-      setRevokeOpen(null);
+      setCabutOpen(null);
     },
-    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Failed'),
+    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Gagal'),
   });
 
   const defaultEnd = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 16);
@@ -67,43 +68,43 @@ export default function ConsentManagement() {
     <div className="space-y-6 pb-20 lg:pb-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Consent Management</h1>
-          <p className="text-slate-500">Grant, limit, or revoke doctor access to your records</p>
+          <h1 className="text-2xl font-bold">Manajemen Consent</h1>
+          <p className="text-slate-500">Beri, batasi, atau cabut akses dokter ke rekam medis lu</p>
         </div>
         <Button onClick={() => { setForm({ ...form, endTime: defaultEnd }); setGrantOpen(true); }}>
-          Grant Access
+          Beri Akses
         </Button>
       </div>
 
       <Card>
         {isLoading ? <LoadingSkeleton /> : !consents?.length ? (
-          <EmptyState title="No consents yet" description="Grant access to a doctor to get started." />
+          <EmptyState title="Belum ada consent" description="Beri akses ke dokter dulu buat mulai." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-slate-500">
-                  <th className="pb-3 pr-4">Doctor</th>
-                  <th className="pb-3 pr-4">Scope</th>
-                  <th className="pb-3 pr-4">Purpose</th>
+                  <th className="pb-3 pr-4">Dokter</th>
+                  <th className="pb-3 pr-4">Cakupan</th>
+                  <th className="pb-3 pr-4">Tujuan</th>
                   <th className="pb-3 pr-4">Status</th>
-                  <th className="pb-3 pr-4">Expires</th>
-                  <th className="pb-3">Actions</th>
+                  <th className="pb-3 pr-4">Berakhir</th>
+                  <th className="pb-3">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {consents.map((c) => (
                   <tr key={c.id} className="border-b border-slate-100">
                     <td className="py-3 pr-4">{c.grantee?.username}</td>
-                    <td className="py-3 pr-4">{c.accessScope}</td>
-                    <td className="py-3 pr-4">{c.purpose}</td>
+                    <td className="py-3 pr-4">{scopeLabel(c.accessScope)}</td>
+                    <td className="py-3 pr-4">{purposeLabel(c.purpose)}</td>
                     <td className="py-3 pr-4"><StatusBadge status={c.status} /></td>
                     <td className="py-3 pr-4">{new Date(c.endTime).toLocaleDateString()}</td>
                     <td className="py-3 space-x-2">
                       {c.status === 'ACTIVE' && (
                         <>
-                          <Button variant="outline" className="text-xs" onClick={() => setLimitOpen(c)}>Limit</Button>
-                          <Button variant="danger" className="text-xs" onClick={() => setRevokeOpen(c)}>Revoke</Button>
+                          <Button variant="outline" className="text-xs" onClick={() => setBatasiOpen(c)}>Batasi</Button>
+                          <Button variant="danger" className="text-xs" onClick={() => setCabutOpen(c)}>Cabut</Button>
                         </>
                       )}
                     </td>
@@ -115,54 +116,54 @@ export default function ConsentManagement() {
         )}
       </Card>
 
-      <Modal open={grantOpen} onClose={() => setGrantOpen(false)} title="Grant Access">
+      <Modal open={grantOpen} onClose={() => setGrantOpen(false)} title="Beri Akses">
         <div className="space-y-4">
-          <Select label="Doctor" value={form.granteeUserId} onChange={(e) => setForm({ ...form, granteeUserId: e.target.value })}>
-            <option value="">Select doctor</option>
+          <Select label="Dokter" value={form.granteeUserId} onChange={(e) => setForm({ ...form, granteeUserId: e.target.value })}>
+            <option value="">Pilih dokter</option>
             {doctors?.map((d: { userId: string; username: string; specialty: string }) => (
               <option key={d.userId} value={d.userId}>{d.username} — {d.specialty}</option>
             ))}
           </Select>
-          <Select label="Data Type" value={form.accessScope} onChange={(e) => setForm({ ...form, accessScope: e.target.value })}>
-            <option value="full_ehr">Full EHR</option>
-            <option value="diagnosis">Diagnosis Only</option>
-            <option value="lab_results">Lab Results</option>
+          <Select label="Jenis Data" value={form.accessScope} onChange={(e) => setForm({ ...form, accessScope: e.target.value })}>
+            <option value="full_ehr">RME Lengkap</option>
+            <option value="diagnosis">Diagnosis Saja</option>
+            <option value="lab_results">Hasil Lab</option>
           </Select>
-          <Select label="Purpose" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })}>
-            <option value="treatment">Treatment</option>
-            <option value="consultation">Consultation</option>
-            <option value="follow_up">Follow Up</option>
+          <Select label="Tujuan" value={form.purpose} onChange={(e) => setForm({ ...form, purpose: e.target.value })}>
+            <option value="treatment">Perawatan</option>
+            <option value="consultation">Konsultasi</option>
+            <option value="follow_up">Kontrol Lanjutan</option>
           </Select>
-          <Input label="End Date" type="datetime-local" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
+          <Input label="Tanggal Akhir" type="datetime-local" value={form.endTime} onChange={(e) => setForm({ ...form, endTime: e.target.value })} />
           <Button className="w-full" onClick={() => grantMutation.mutate(form)} disabled={grantMutation.isPending || !form.granteeUserId}>
-            {grantMutation.isPending ? 'Granting...' : 'Grant Access'}
+            {grantMutation.isPending ? 'Memberi akses...' : 'Beri Akses'}
           </Button>
         </div>
       </Modal>
 
-      <Modal open={!!limitOpen} onClose={() => setLimitOpen(null)} title="Limit Consent">
+      <Modal open={!!limitOpen} onClose={() => setBatasiOpen(null)} title="Batasi Consent">
         {limitOpen && (
           <div className="space-y-4">
-            <Select label="Limitation Type" id="limitType" defaultValue="endTime">
-              <option value="endTime">Reduce End Time</option>
-              <option value="dataType">Change Data Type</option>
-              <option value="purpose">Change Purpose</option>
+            <Select label="Jenis Batasan" id="limitType" defaultValue="endTime">
+              <option value="endTime">Kurangi Waktu Akhir</option>
+              <option value="dataType">Ubah Jenis Data</option>
+              <option value="purpose">Ubah Tujuan</option>
             </Select>
-            <Input label="New Value" id="limitValue" placeholder="Unix timestamp or new value" />
+            <Input label="Nilai Baru" id="limitValue" placeholder="Unix timestamp atau nilai baru" />
             <Button className="w-full" onClick={() => {
               const type = (document.getElementById('limitType') as HTMLSelectElement).value;
               const val = (document.getElementById('limitValue') as HTMLInputElement).value;
               limitMutation.mutate({ id: limitOpen.id, limitationType: type, newValue: val });
-            }}>Apply Limitation</Button>
+            }}>Terapkan Batasan</Button>
           </div>
         )}
       </Modal>
 
-      <Modal open={!!revokeOpen} onClose={() => setRevokeOpen(null)} title="Revoke Consent">
+      <Modal open={!!revokeOpen} onClose={() => setCabutOpen(null)} title="Cabut Consent">
         {revokeOpen && (
           <div className="space-y-4">
-            <p className="text-sm text-slate-600">Revoke access for {revokeOpen.grantee?.username}? This will be recorded on blockchain.</p>
-            <Button variant="danger" className="w-full" onClick={() => revokeMutation.mutate(revokeOpen.id)}>Confirm Revoke</Button>
+            <p className="text-sm text-slate-600">Cabut akses untuk {revokeOpen.grantee?.username}? Ini akan dicatat di blockchain.</p>
+            <Button variant="danger" className="w-full" onClick={() => revokeMutation.mutate(revokeOpen.id)}>Konfirmasi Cabut</Button>
           </div>
         )}
       </Modal>

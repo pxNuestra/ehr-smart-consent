@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ClipboardList, Activity } from 'lucide-react';
 import api from '../../lib/api';
 import { Card, CardHeader, StatCard, LoadingSkeleton } from '../../components/ui';
+import { actionLabel, statusLabel } from '../../lib/format';
 
 export default function AuditorDashboard() {
   const { data: logs, isLoading } = useQuery({
@@ -16,24 +17,24 @@ export default function AuditorDashboard() {
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
       <div>
-        <h1 className="text-2xl font-bold">Auditor Dashboard</h1>
-        <p className="text-slate-500">Audit trail overview — no clinical data access</p>
+        <h1 className="text-2xl font-bold">Dashboard Auditor</h1>
+        <p className="text-slate-500">Ringkasan audit, tanpa akses data klinis</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <StatCard label="Audit Log Entries" value={auditCount} icon={<ClipboardList size={24} />} />
-        <StatCard label="Access Log Entries" value={accessCount} icon={<Activity size={24} />} />
+        <StatCard label="Entri Log Audit" value={auditCount} icon={<ClipboardList size={24} />} />
+        <StatCard label="Entri Log Akses" value={accessCount} icon={<Activity size={24} />} />
       </div>
 
       <Card>
-        <CardHeader title="Recent Audit Events" />
+        <CardHeader title="Event Audit Terbaru" />
         {isLoading ? <LoadingSkeleton /> : (
           <div className="space-y-2">
             {logs?.auditLogs?.data?.slice(0, 8).map((l: { id: string; action: string; decision: string; actor?: { username: string }; createdAt: string; txHash?: string }) => (
               <div key={l.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-100 p-3 text-sm">
-                <span className="font-medium">{l.action}</span>
+                <span className="font-medium">{actionLabel(l.action)}</span>
                 <span>{l.actor?.username}</span>
-                <span className="capitalize">{l.decision.toLowerCase()}</span>
+                <span>{statusLabel(l.decision)}</span>
                 {l.txHash && (
                   <Link to={`/auditor/transactions/${l.txHash}`} className="text-primary-600 hover:underline truncate max-w-xs">
                     {l.txHash.slice(0, 16)}...

@@ -13,21 +13,21 @@ export default function RoleManagement() {
   const updateMutation = useMutation({
     mutationFn: ({ id, role }: { id: string; role: string }) => api.put(`/users/${id}`, { role }),
     onSuccess: () => {
-      toast.success('Role updated');
+      toast.success('Peran berhasil diubah');
       queryClient.invalidateQueries({ queryKey: ['users-roles'] });
     },
-    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Failed'),
+    onError: (err: { response?: { data?: { error?: string } } }) => toast.error(err.response?.data?.error || 'Gagal'),
   });
 
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
       <div>
-        <h1 className="text-2xl font-bold">Role Management</h1>
-        <p className="text-slate-500">Assign roles: Patient, Doctor, Admin, Auditor</p>
+        <h1 className="text-2xl font-bold">Manajemen Peran</h1>
+        <p className="text-slate-500">Atur peran: Pasien, Dokter, Admin, Auditor</p>
       </div>
 
       <Card>
-        <CardHeader title="User Roles" />
+        <CardHeader title="Peran User" />
         {isLoading ? <LoadingSkeleton /> : (
           <div className="space-y-3">
             {data?.data?.map((u: { id: string; username: string; role: string }) => (
@@ -39,8 +39,8 @@ export default function RoleManagement() {
                     onChange={(e) => updateMutation.mutate({ id: u.id, role: e.target.value })}
                     className="w-40"
                   >
-                    <option value="PATIENT">Patient</option>
-                    <option value="DOCTOR">Doctor</option>
+                    <option value="PATIENT">Pasien</option>
+                    <option value="DOCTOR">Dokter</option>
                     <option value="ADMIN">Admin</option>
                     <option value="AUDITOR">Auditor</option>
                   </Select>
