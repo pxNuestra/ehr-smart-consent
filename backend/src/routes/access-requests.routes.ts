@@ -106,7 +106,7 @@ router.post('/:id/verify-and-open', authorize('DOCTOR'), validateBody(verifyOpen
   });
   if (!accessRequest) return res.status(404).json({ error: 'Request tidak ditemukan' });
   if (accessRequest.requesterUserId !== req.user!.id) {
-    return res.status(403).json({ error: 'Ini bukan request akses milik lu' });
+    return res.status(403).json({ error: 'Ini bukan request akses milik Anda' });
   }
 
   const fpResult = await verifyFingerprint(

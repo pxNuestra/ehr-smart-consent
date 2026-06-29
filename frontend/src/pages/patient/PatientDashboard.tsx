@@ -37,7 +37,7 @@ export default function PatientDashboard() {
       </div>
 
       <Card>
-        <CardHeader title="Profil Lu" subtitle="Informasi identitas non-klinis" />
+        <CardHeader title="Profil Anda" subtitle="Informasi identitas non-klinis" />
         <dl className="grid gap-4 sm:grid-cols-2">
           <div><dt className="text-sm text-slate-500">Kode Pasien</dt><dd className="font-medium">{profile?.profile?.patientCode}</dd></div>
           <div><dt className="text-sm text-slate-500">Jenis Kelamin</dt><dd className="font-medium">{profile?.profile?.gender}</dd></div>

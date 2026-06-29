@@ -19,7 +19,7 @@ export default function AccessHistory() {
     <div className="space-y-6 pb-20 lg:pb-6">
       <div>
         <h1 className="text-2xl font-bold">Riwayat Akses</h1>
-        <p className="text-slate-500">Siapa yang minta akses ke rekam medis lu — {profile?.profile?.patientCode}</p>
+        <p className="text-slate-500">Siapa yang minta akses ke rekam medis Anda — {profile?.profile?.patientCode}</p>
       </div>
 
       <Card>

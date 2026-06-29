@@ -45,7 +45,7 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader title="Catatan Admin" subtitle="Data klinis sengaja tidak bisa diakses" />
           <p className="text-sm text-slate-600">
-            Sebagai admin, lu hanya mengelola user, peran, dan konfigurasi sistem. Diagnosis, resep, dan hasil lab pasien terenkripsi dan tidak tersedia lewat endpoint admin.
+            Sebagai admin, Anda hanya mengelola user, peran, dan konfigurasi sistem. Diagnosis, resep, dan hasil lab pasien terenkripsi dan tidak tersedia lewat endpoint admin.
           </p>
         </Card>
       </div>
